@@ -107,7 +107,7 @@ if (!class_exists('Woocommerce_PayPerPost')) {
 		}
 
 		public static function checkForProduct($id) {
-			$purchased = 0;
+
 			$current_user = wp_get_current_user();
 
 			$ids = str_replace(" ", '', $id);
@@ -116,7 +116,7 @@ if (!class_exists('Woocommerce_PayPerPost')) {
 			foreach($ids as $id) {
 				$purchased = wc_customer_bought_product( $current_user->user_email, $current_user->ID, $id );
 
-				if($purchased){
+                if($purchased){
 					return $purchased;
 				}
 			}
@@ -128,6 +128,8 @@ if (!class_exists('Woocommerce_PayPerPost')) {
 		 * [woocommerce-payperpost template='purchased']
 		 */
 		public static function shortcodes($atts) {
+
+            $return = '';
 
 			extract(shortcode_atts(array(
 				                       'template' => 'purchased',
@@ -150,11 +152,13 @@ if (!class_exists('Woocommerce_PayPerPost')) {
 
 			$posts_array = get_posts($args);
 
-			switch ($template) {
+			switch ($atts['template']) {
 				case "purchased":
 					if (is_user_logged_in()) {
-						foreach ($posts_array as $index => $post) {
+
+                        foreach ($posts_array as $index => $post) {
 							$productID = self::get(self::METAKEY, $post->ID);
+//                            var_dump($productID);
 							if (!self::checkForProduct($productID)) {
 								//Remove page if they have not purchased
 								unset($posts_array[$index]);
